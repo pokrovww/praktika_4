@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Оплата и Обратная связь — Центр кисти</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    
+    <!-- Подключение CloudPayments (Задание 1) -->
+    <script src="https://widget.cloudpayments.ru/cp.js"></script>
+
+    <style>
+        body {
+            background: url("img/light-picton-blue-abstract-creative-background-design_851755-198099.jpg") no-repeat center center fixed;
+            background-size: cover;
+        }
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.85); z-index: -1;
+        }
+        .container {
+            max-width: 800px; margin: 40px auto; padding: 30px;
+            background: rgba(255,255,255,0.95); border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; color: #0056b3; }
+
+        /* Стили для формы оплаты (Задание 1) */
+        .payment-form {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 30px; border-radius: 16px; color: white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        .payment-form label { color: #fff; font-size: 14px; margin-bottom: 5px; display: block;}
+        .payment-form input {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 12px; border-radius: 8px; width: 100%;
+            font-size: 16px; margin-bottom: 15px; box-sizing: border-box;
+        }
+        .payment-form input::placeholder { color: rgba(255,255,255,0.6); }
+        .payment-form input:focus { outline: none; border-color: #fff; background: rgba(255,255,255,0.2); }
+        .row { display: flex; gap: 15px; }
+        .row > div { flex: 1; }
+        .btn-pay {
+            background: #28a745; color: white; border: none; padding: 15px;
+            width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-pay:hover { background: #218838; transform: translateY(-2px); }
+        .cp-logo { text-align: center; margin-top: 15px; font-size: 12px; opacity: 0.8; }
+
+        /* Стили для формы обратной связи (Задание 2) */
+        .feedback-form { margin-top: 20px; }
+        .feedback-form input, .feedback-form textarea {
+            width: 100%; padding: 12px; border: 1px solid #ddd;
+            border-radius: 8px; margin-bottom: 15px; font-size: 16px;
+            box-sizing: border-box; font-family: inherit;
+        }
+        .feedback-form textarea { height: 120px; resize: vertical; }
+        .btn-send {
+            background: #007bff; color: white; border: none; padding: 12px 30px;
+            border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
+            transition: 0.3s; width: 100%;
+        }
+        .btn-send:hover { background: #0056b3; }
+        
+        /* Уведомления */
+        .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; text-align: center; font-weight: bold;}
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+
+<!-- ========================================== -->
+<!-- ЗАДАНИЕ 1: ФОРМА ОПЛАТЫ (CloudPayments)    -->
+<!-- ========================================== -->
+<div class="container">
+    <h2>💳 Оплата услуг</h2>
+    <p style="text-align: center; color: #666;">Безопасная оплата через платежный шлюз CloudPayments</p>
+    
+    <div id="payment-alert" class="alert"></div>
+
+    <form class="payment-form" id="payForm">
+        <label>Номер карты</label>
+        <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" required>
+        
+        <div class="row">
+            <div>
+                <label>Срок действия</label>
+                <input type="text" id="cardExp" placeholder="MM/YY" maxlength="5" required>
+            </div>
+            <div>
+                <label>CVV/CVC</label>
+                <input type="password" id="cardCvv" placeholder="•••" maxlength="3" required>
+            </div>
+        </div>
+        
+        <label>Имя владельца</label>
+        <input type="text" id="cardName" placeholder="IVAN IVANOV" style="text-transform: uppercase;" required>
+        
+        <button type="submit" class="btn-pay">Оплатить 1500 ₽</button>
+        <div class="cp-logo">Защищено CloudPayments®</div>
+    </form>
+</div>
+
+<!-- ========================================== -->
+<!-- ЗАДАНИЕ 2: ФОРМА ОБРАТНОЙ СВЯЗИ (PHP)      -->
+<!-- ========================================== -->
+<div class="container">
+    <h2>✉️ Обратная связь</h2>
+    <p style="text-align: center; color: #666;">Есть вопросы? Напишите нам, и мы ответим на вашу почту!</p>
+    
+    <div id="feedback-alert" class="alert"></div>
+
+    <form class="feedback-form" id="feedbackForm">
+        <input type="text" name="name" placeholder="Ваше имя" required>
+        <input type="email" name="email" placeholder="Ваш Email" required>
+        <input type="text" name="subject" placeholder="Тема обращения" required>
+        <textarea name="message" placeholder="Ваше сообщение..." required></textarea>
+        <button type="submit" class="btn-send">Отправить сообщение</button>
+    </form>
+</div>
+
+<script>
+    // ==========================================
+    // ЛОГИКА ЗАДАНИЯ 1: CloudPayments
+    // ==========================================
+    // Автоформатирование номера карты (пробелы каждые 4 цифры)
+    document.getElementById('cardNumber').addEventListener('input', function(e) {
+        let v = this.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        let matches = v.match(/\d{4,16}/g);
+        let match = matches && matches[0] || '';
+        let parts = [];
+        for (let i = 0, len = match.length; i < len; i += 4) {
+            parts.push(match.substring(i, i + 4));
+        }
+        this.value = parts.length ? parts.join(' ') : v;
+    });
+
+    // Автоформатирование срока (добавление /)
+    document.getElementById('cardExp').addEventListener('input', function(e) {
+        let v = this.value.replace(/\D/g, '');
+        if (v.length >= 2) {
+            this.value = v.substring(0, 2) + '/' + v.substring(2, 4);
+        } else {
+            this.value = v;
+        }
+    });
+
+    // Обработка отправки формы (Интеграция с CloudPayments)
+    document.getElementById('payForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Инициализация виджета CloudPayments
+        // ВНИМАНИЕ: Замените 'pk_test_...' на ваш реальный Public ID из личного кабинета CloudPayments
+        var cp = new CloudPayments();
+        
+        var payload = {
+            name: document.getElementById('cardName').value,
+            description: 'Оплата услуг Центра Кисти'
+        };
+
+        // Вызов виджета CloudPayments (в тестовом режиме без реального списания)
+        cp.pay('charge', {
+                publicId: 'pk_test_XXXXXXXXXXXXXXXX', // <-- ТВОЙ PUBLIC ID
+                description: 'Оплата услуг Центра Кисти',
+                amount: '1500',
+                currency: 'RUB',
+                accountId: 'user_id_123',
+                skin: 'mini',
+                autoClose: 3
+            },
+            {
+                success: function() {
+                    showPaymentAlert('success', 'Оплата прошла успешно! Спасибо.');
+                },
+                fail: function() {
+                    // Отмена или ошибка
+                    showPaymentAlert('error', 'Оплата не прошла. Проверьте данные карты.');
+                }
+            }
+        );
+    });
+
+    function showPaymentAlert(type, text) {
+        let alert = document.getElementById('payment-alert');
+        alert.className = 'alert alert-' + type;
+        alert.innerText = text;
+        alert.style.display = 'block';
+    }
+
+    // ==========================================
+    // ЛОГИКА ЗАДАНИЯ 2: Отправка на PHP (AJAX)
+    // ==========================================
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let formData = new FormData(this);
+        let alertBox = document.getElementById('feedback-alert');
+
+        // Отправка данных на PHP-скрипт
+        fetch('send_mail.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            if (data.trim() === 'success') {
+                alertBox.className = 'alert alert-success';
+                alertBox.innerText = '✅ Сообщение успешно отправлено! Мы скоро ответим.';
+                document.getElementById('feedbackForm').reset();
+            } else {
+                alertBox.className = 'alert alert-error';
+                alertBox.innerText = '❌ Ошибка при отправке. Попробуйте позже.';
+            }
+            alertBox.style.display = 'block';
+        })
+        .catch(() => {
+            alertBox.className = 'alert alert-error';
+            alertBox.innerText = '❌ Ошибка сети. Проверьте подключение.';
+            alertBox.style.display = 'block';
+        });
+    });
+</script>
+
+</body>
+</html>
